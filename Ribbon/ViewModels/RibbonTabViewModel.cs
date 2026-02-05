@@ -1,12 +1,11 @@
 ﻿using Ribbon.Helpers;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 
 namespace Ribbon.ViewModels;
 
 public class RibbonTabViewModel : ObservableObject, IDisposable
 {
-    internal RibbonViewModel? Owner;
+    public RibbonViewModel Owner { get; internal set; }
     public ObservableCollection<RibbonGroupViewModel> Groups { get; } = [];
 
     public RibbonTabViewModel()
@@ -16,9 +15,13 @@ public class RibbonTabViewModel : ObservableObject, IDisposable
 
     private void Groups_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        if(e.NewItems != null)
-            foreach(RibbonGroupViewModel g in e.NewItems)
-                g.Owner = Owner;
+        if (e.NewItems != null)
+            foreach (RibbonGroupViewModel item in e.NewItems)
+                item.Owner = this;
+
+        if (e.OldItems != null)
+            foreach (RibbonGroupViewModel item in e.OldItems)
+                item.Dispose();
     }
 
     public string Header
@@ -42,22 +45,12 @@ public class RibbonTabViewModel : ObservableObject, IDisposable
     public bool IsSelected
     {
         get => field;
-        set
-        {
-            if(SetValue(ref field, value) && value)
-            {
-                Owner?.SelectedTab = this;
-            }
-        }
+        set => SetValue(ref field, value);
     }
-
 
     public void Dispose()
     {
-        Owner = null;
-        Groups.CollectionChanged -= Groups_CollectionChanged;
-        foreach(var g in Groups)
-            g.Dispose();
         Groups.Clear();
+        Groups.CollectionChanged -= Groups_CollectionChanged;
     }
 }

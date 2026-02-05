@@ -1,4 +1,5 @@
-﻿using Ribbon.Helpers;
+﻿using Ribbon.Enums;
+using Ribbon.Helpers;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -6,7 +7,7 @@ namespace Ribbon.ViewModels;
 
 public class RibbonButtonViewModel : ObservableObject, IDisposable
 {
-    internal RibbonViewModel? Owner;
+    public RibbonGroupViewModel Owner { get; internal set;  }
     public string Header
     {
         get => field;
@@ -34,9 +35,9 @@ public class RibbonButtonViewModel : ObservableObject, IDisposable
         get => field;
         set
         {
-            if(SetValue(ref field, value) && value)
+            if (SetValue(ref field, value) && value)
             {
-               Owner?.SelectedButton = this;
+                Owner.AddActiveButton(this);
             }
         }
     }
@@ -48,6 +49,5 @@ public class RibbonButtonViewModel : ObservableObject, IDisposable
     {
         Command = null;
         CommandParameter = null;
-        Owner = null;
     }
 }

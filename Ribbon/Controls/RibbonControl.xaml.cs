@@ -1,6 +1,9 @@
-﻿using Ribbon.ViewModels;
+﻿using Ribbon.Interfaces;
+using Ribbon.Models;
+using Ribbon.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -18,7 +22,8 @@ namespace Ribbon.Controls
     /// <summary>
     /// Логика взаимодействия для RibbonControl.xaml
     /// </summary>
-    public partial class RibbonControl : UserControl
+    [ContentProperty(nameof(Commands))]
+    public partial class RibbonControl : UserControl, IDisposable, IRibbon
     {
         public RibbonViewModel ViewModel
         {
@@ -30,13 +35,47 @@ namespace Ribbon.Controls
                 DataContext = this;
             }
         }
+
+        public static readonly DependencyProperty CommandStrategyProperty =
+            DependencyProperty.Register(
+                nameof(CommandStrategy),
+                typeof(IRibbonCommandStrategy),
+                typeof(RibbonControl),
+                new PropertyMetadata(null));
+
+        public IRibbonCommandStrategy? CommandStrategy
+        {
+            get => (IRibbonCommandStrategy?)GetValue(CommandStrategyProperty);
+            set => SetValue(CommandStrategyProperty, value);
+        }
+
+        public static readonly DependencyProperty CommandsProperty =
+        DependencyProperty.Register(
+            nameof(Commands),
+            typeof(Collection<CommandModel>),
+            typeof(RibbonControl),
+            new PropertyMetadata(new Collection<CommandModel>()));
+
+        public Collection<CommandModel> Commands
+        {
+            get
+            {
+                var col = (Collection<CommandModel>?)GetValue(CommandsProperty);
+                if (col == null)
+                {
+                    col = [];
+                    SetValue(CommandsProperty, col);
+                }
+                return col;
+            }
+            set => SetValue(CommandsProperty, value);
+        }
+
         public RibbonControl(RibbonViewModel vm)
         {
             InitializeComponent();
             ViewModel = vm;
         }
-
-        private bool _init = false;
 
         public RibbonControl()
         {
@@ -59,6 +98,11 @@ namespace Ribbon.Controls
                 if (ReferenceEquals(ViewModel.SelectedTab, tab)) return;
                 ViewModel.SelectedTab = tab;
             }
+        }
+
+        public void Dispose()
+        {
+            ViewModel = null;
         }
     }
 }

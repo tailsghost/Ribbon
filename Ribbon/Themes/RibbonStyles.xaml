@@ -3,82 +3,170 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:Ribbon.ViewModels">
 
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+
     <Style x:Key="RibbonButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource TabBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TabBorder}" />
+        <Setter Property="Foreground" Value="{DynamicResource TabForeground}" />
+        <Setter Property="BorderThickness" Value="1" />
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border
-                        Padding="6"
+                        x:Name="Bd"
+                        Padding="4,2"
                         Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="4">
+                        BorderBrush="Transparent"
+                        BorderThickness="1">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
+
                     <ControlTemplate.Triggers>
+
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="#CCCCCC" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource TabBorderHover}" />
                         </Trigger>
+
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="#2D6FB2" />
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TabBackgroundChecked}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TabForegroundChecked}" />
                         </Trigger>
+
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.4" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TabBackgroundDisabled}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TabForegroundDisabled}" />
+                            <Setter Property="Opacity" Value="0.7" />
                         </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="Background" Value="#2B2B2B" />
-        <Setter Property="BorderBrush" Value="#3C3C3C" />
-        <Setter Property="Foreground" Value="#EEEEEE" />
+    </Style>
+
+
+    <Style
+        x:Key="RibbonTabToggleStyle"
+        BasedOn="{StaticResource RibbonButtonStyle}"
+        TargetType="ToggleButton">
+
+        <Setter Property="Background" Value="{DynamicResource TabBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TabBorder}" />
+        <Setter Property="Foreground" Value="{DynamicResource TabForeground}" />
+        <Setter Property="Cursor" Value="Hand" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border
+                        x:Name="Bd"
+                        Padding="6,4"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TabBackgroundHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TabForegroundHover}" />
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TabBackgroundChecked}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TabForegroundChecked}" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TabBackgroundDisabled}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TabForegroundDisabled}" />
+                            <Setter Property="Opacity" Value="0.7" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <DataTemplate DataType="{x:Type vm:RibbonGroupViewModel}">
-        <Border
-            Margin="4"
-            Padding="6"
-            Background="#1F1F1F"
-            CornerRadius="4">
-            <StackPanel Width="160">
-                <TextBlock
-                    Margin="0,0,0,6"
-                    FontWeight="SemiBold"
-                    Foreground="#DDDDDD"
-                    Text="{Binding Header}" />
+        <Border Margin="1,0,0,2" Background="{DynamicResource GroupBackground}">
+            <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+
                 <ItemsControl ItemsSource="{Binding Buttons}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type vm:RibbonButtonViewModel}">
                             <ToggleButton
                                 MinWidth="60"
                                 MinHeight="60"
-                                Margin="2"
+                                Padding="2"
                                 Command="{Binding Command}"
                                 CommandParameter="{Binding CommandParameter}"
+                                Cursor="Hand"
                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                 IsEnabled="{Binding IsActive}"
-                                Style="{StaticResource RibbonButtonStyle}">
+                                Style="{StaticResource RibbonButtonStyle}"
+                                Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+
                                 <ToggleButton.Content>
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <ContentPresenter Content="{Binding Icon}" />
+                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                        <Image
+                                            Width="20"
+                                            Height="20"
+                                            Margin="1,0"
+                                            Source="{Binding Icon}"
+                                            Stretch="Uniform">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Icon}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Icon}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
                                         <TextBlock
-                                            Margin="0,6,0,0"
-                                            FontSize="11"
+                                            FontSize="12"
                                             Text="{Binding Header}"
-                                            TextAlignment="Center"
-                                            TextWrapping="Wrap" />
+                                            TextAlignment="Center" />
                                     </StackPanel>
                                 </ToggleButton.Content>
+
                             </ToggleButton>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <Border
+                    Margin="1"
+                    Background="{DynamicResource TabBackground}"
+                    BorderBrush="Beige"
+                    BorderThickness="0,0.5,0,0">
+                    <TextBlock
+                        Padding="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TabForeground}"
+                        Text="{Binding Header}" />
+                </Border>
             </StackPanel>
         </Border>
     </DataTemplate>

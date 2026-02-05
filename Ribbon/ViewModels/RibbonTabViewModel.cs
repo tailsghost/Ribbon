@@ -13,6 +13,12 @@ public class RibbonTabViewModel : ObservableObject, IDisposable
         Groups.CollectionChanged += Groups_CollectionChanged;
     }
 
+    public void AddRange(IEnumerable<RibbonGroupViewModel> items)
+    {
+        foreach (var item in items) 
+            Groups.Add(item);
+    }
+
     private void Groups_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.NewItems != null)

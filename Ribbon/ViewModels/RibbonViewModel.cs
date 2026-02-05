@@ -13,6 +13,12 @@ public class RibbonViewModel : ObservableObject, IDisposable
         Tabs.CollectionChanged += Tabs_CollectionChanged;
     }
 
+    public void AddRange(IEnumerable<RibbonTabViewModel> items)
+    {
+        foreach (var item in items) 
+            Tabs.Add(item);
+    }
+
     internal event Action<RibbonButtonViewModel> AddButtonAction;
 
     internal void AddButton(RibbonButtonViewModel button)

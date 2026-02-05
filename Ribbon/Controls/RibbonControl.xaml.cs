@@ -32,8 +32,23 @@ namespace Ribbon.Controls
             {
                 DataContextChanged -= RibbonControl_DataContextChanged;
                 field = value;
+                if (field != null)
+                {
+                    field.AddButtonAction += RibbonControl_AddButtonAction;
+
+                    foreach (var tab in field.Tabs)
+                        foreach (var group in tab.Groups)
+                            foreach (var button in group.Buttons)
+                                RibbonControl_AddButtonAction(button);
+                }
+
                 DataContext = this;
             }
+        }
+
+        private void RibbonControl_AddButtonAction(RibbonButtonViewModel obj)
+        {
+            CommandStrategy?.OnButtonAdding(this,obj);
         }
 
         public static readonly DependencyProperty CommandStrategyProperty =
@@ -85,7 +100,7 @@ namespace Ribbon.Controls
 
         private void RibbonControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is RibbonViewModel vm)
+            if (sender is RibbonControl { DataContext: RibbonViewModel vm})
             {
                 ViewModel = vm;
             }
@@ -102,6 +117,7 @@ namespace Ribbon.Controls
 
         public void Dispose()
         {
+            ViewModel.AddButtonAction -= RibbonControl_AddButtonAction;
             ViewModel = null;
         }
     }

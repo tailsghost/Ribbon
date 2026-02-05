@@ -120,13 +120,18 @@
                                 Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
 
                                 <ToggleButton.Content>
-                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                    <Grid MaxWidth="120">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
                                         <Image
-                                            Width="20"
-                                            Height="20"
+                                            Grid.Column="0"
+                                            Width="21"
+                                            Height="21"
                                             Margin="1,0"
                                             Source="{Binding Icon}"
-                                            Stretch="Uniform">
+                                            Stretch="UniformToFill">
                                             <Image.Style>
                                                 <Style TargetType="Image">
                                                     <Setter Property="Visibility" Value="Visible" />
@@ -142,10 +147,13 @@
                                             </Image.Style>
                                         </Image>
                                         <TextBlock
+                                            Grid.Column="1"
+                                            Margin="0,2,0,0"
                                             FontSize="12"
                                             Text="{Binding Header}"
-                                            TextAlignment="Center" />
-                                    </StackPanel>
+                                            TextAlignment="Center"
+                                            TextWrapping="Wrap" />
+                                    </Grid>
                                 </ToggleButton.Content>
 
                             </ToggleButton>

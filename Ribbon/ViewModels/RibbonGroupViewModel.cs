@@ -16,6 +16,12 @@ public class RibbonGroupViewModel : ObservableObject, IDisposable
         Buttons.CollectionChanged += Buttons_CollectionChanged;
     }
 
+    public void AddRange(IEnumerable<RibbonButtonViewModel> items)
+    {
+        foreach (var item in items) 
+            Buttons.Add(item);
+    }
+
     private void Buttons_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.NewItems != null)

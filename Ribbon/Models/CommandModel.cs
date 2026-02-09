@@ -9,5 +9,5 @@ public class CommandModel
 
     public ICommand Command { get; set; }
 
-    public ICommand CommandParameter { get; set; }
+    public object CommandParameter { get; set; }
 }

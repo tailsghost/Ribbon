@@ -54,6 +54,8 @@ public class RelayCommand<T> : RadTreeCommand
     public RelayCommand(string commandName, Action<T> exec, Func<T, bool> can = null)
     {
         CommandName = commandName;
+        _execute = exec ?? throw new ArgumentException(nameof(exec));
+        _canExecute = can;
     }
 
     public override bool CanExecute(object parameter)

@@ -35,13 +35,10 @@ public sealed class CommandRefExtension : MarkupExtension
         Traverse(root, dc =>
         {
             var resolved = ResolvePath(dc, Path);
-            if (resolved is ICommand cmd)
-            {
-                foundCommand = cmd;
-                foundDc = dc;
-                return true;
-            }
-            return false;
+            if (resolved is not ICommand cmd) return false;
+            foundCommand = cmd;
+            foundDc = dc;
+            return true;
         });
 
         if (foundCommand == null)
@@ -69,21 +66,21 @@ public sealed class CommandRefExtension : MarkupExtension
     {
         void Walk(DependencyObject obj)
         {
-            if (obj is FrameworkElement fe && fe.DataContext != null)
+            if (obj is FrameworkElement { DataContext: not null } fe)
             {
                 if (tryDataContext(fe.DataContext))
                     throw new FoundException();
             }
-            else if (obj is FrameworkContentElement fce && fce.DataContext != null)
+            else if (obj is FrameworkContentElement { DataContext: not null } fce)
             {
                 if (tryDataContext(fce.DataContext))
                     throw new FoundException();
             }
 
-            if (obj is Visual || obj is Visual3D)
+            if (obj is Visual or Visual3D)
             {
-                int vCount = VisualTreeHelper.GetChildrenCount(obj);
-                for (int i = 0; i < vCount; i++)
+                var vCount = VisualTreeHelper.GetChildrenCount(obj);
+                for (var i = 0; i < vCount; i++)
                 {
                     Walk(VisualTreeHelper.GetChild(obj, i));
                 }
@@ -112,7 +109,7 @@ public sealed class CommandRefExtension : MarkupExtension
     {
         if (source == null || string.IsNullOrEmpty(path)) return null;
 
-        object? current = source;
+        var current = source;
         foreach (var part in path.Split('.'))
         {
             if (current == null) break;

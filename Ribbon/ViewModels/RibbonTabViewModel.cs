@@ -56,6 +56,11 @@ public class RibbonTabViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        for(var i = 0; i < Groups.Count; i++)
+        {
+            Groups[i].Dispose();
+        }
+
         Groups.Clear();
         Groups.CollectionChanged -= Groups_CollectionChanged;
     }

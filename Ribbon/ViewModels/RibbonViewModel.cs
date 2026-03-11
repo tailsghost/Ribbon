@@ -6,6 +6,7 @@ namespace Ribbon.ViewModels;
 
 public class RibbonViewModel : ObservableObject, IDisposable
 {
+    public event Action DisposableAction;
     public ObservableCollection<RibbonTabViewModel> Tabs { get; } = [];
 
     public RibbonViewModel()
@@ -26,7 +27,7 @@ public class RibbonViewModel : ObservableObject, IDisposable
 
     private void Tabs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        if (SelectedTab == null) {
+        if (SelectedTab == null && e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset) {
             SelectedTab = Tabs[0];
         }
 
@@ -56,7 +57,12 @@ public class RibbonViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         SelectedTab = null;
+        for (var i = 0; i < Tabs.Count; i++) {
+            var tab = Tabs[i];
+            tab.Dispose();
+        }
         Tabs.Clear();
         Tabs.CollectionChanged -= Tabs_CollectionChanged;
+        DisposableAction?.Invoke();
     }
 }

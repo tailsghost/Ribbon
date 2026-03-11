@@ -32,8 +32,10 @@ namespace Ribbon.Controls
             {
                 DataContextChanged -= RibbonControl_DataContextChanged;
                 field = value;
+
                 if (field != null)
                 {
+                    field.DisposableAction += Dispose;
                     field.AddButtonAction += RibbonControl_AddButtonAction;
 
                     foreach (var tab in field.Tabs)
@@ -117,7 +119,10 @@ namespace Ribbon.Controls
 
         public void Dispose()
         {
+            ViewModel.DisposableAction -= Dispose;
             ViewModel.AddButtonAction -= RibbonControl_AddButtonAction;
+            Commands.Clear();
+            CommandStrategy = null;
             ViewModel = null;
         }
     }

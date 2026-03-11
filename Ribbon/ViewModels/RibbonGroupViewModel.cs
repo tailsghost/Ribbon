@@ -88,7 +88,13 @@ public class RibbonGroupViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        Owner = null;
         ActiveButtons.Clear();
+        for(var i = 0;  i < Buttons.Count; i++)
+        {
+            var button = Buttons[i];
+            button.Dispose();
+        }
         Buttons.Clear();
         Buttons.CollectionChanged -= Buttons_CollectionChanged;
     }

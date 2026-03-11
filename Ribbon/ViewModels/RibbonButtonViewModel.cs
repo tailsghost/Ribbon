@@ -49,5 +49,6 @@ public class RibbonButtonViewModel : ObservableObject, IDisposable
     {
         Command = null;
         CommandParameter = null;
+        Owner = null;
     }
 }

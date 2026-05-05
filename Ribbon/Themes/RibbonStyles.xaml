@@ -63,7 +63,7 @@
                 <ControlTemplate TargetType="ToggleButton">
                     <Border
                         x:Name="Bd"
-                        Padding="6,4"
+                        Padding="6,2"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         CornerRadius="4">

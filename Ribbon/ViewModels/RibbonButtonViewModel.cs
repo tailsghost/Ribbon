@@ -2,6 +2,7 @@
 using Ribbon.Helpers;
 using System.Windows.Input;
 using System.Windows.Media;
+using Wpf.Ui.Controls;
 
 namespace Ribbon.ViewModels;
 
@@ -14,7 +15,7 @@ public class RibbonButtonViewModel : ObservableObject, IDisposable
         set => SetValue(ref field, value);
     } = string.Empty;
 
-    public ImageSource Icon
+    public SymbolRegular Icon
     {
         get => field;
         set => SetValue(ref field, value);

@@ -100,6 +100,7 @@ namespace Ribbon.Controls
             InitializeComponent();
         }
 
+
         private void RibbonControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (sender is RibbonControl { DataContext: RibbonViewModel vm})

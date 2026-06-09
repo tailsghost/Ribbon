@@ -5,68 +5,219 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Ribbon.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:Ribbon.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Ribbon;component/Themes/RibbonTheme.xaml" />
-                <ResourceDictionary Source="/Ribbon;component/Themes/RibbonStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
 
-            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
-            <DataTemplate x:Key="RibbonTabButtonTemplate" DataType="{x:Type vm:RibbonTabViewModel}">
-                <ToggleButton
-                    Margin="2,0"
-                    Checked="TabButton_Checked"
-                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                    IsEnabled="{Binding IsActive}"
-                    Style="{StaticResource RibbonTabToggleStyle}">
-                    <TextBlock
-                        Padding="3,0"
-                        FontWeight="SemiBold"
-                        Text="{Binding Header}" />
-                </ToggleButton>
-            </DataTemplate>
+        <Style
+            x:Key="RibbonButtonStyle"
+            BasedOn="{StaticResource {x:Type ToggleButton}}"
+            TargetType="ToggleButton">
+            <Setter Property="Padding" Value="4,2" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="MinWidth" Value="60" />
+            <Setter Property="MinHeight" Value="50" />
+            <Setter Property="Margin" Value="1" />
+        </Style>
 
-            <DataTemplate x:Key="RibbonTabContentTemplate" DataType="{x:Type vm:RibbonTabViewModel}">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding Groups}" Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+        <Style
+            x:Key="RibbonTabToggleStyle"
+            BasedOn="{StaticResource {x:Type ToggleButton}}"
+            TargetType="ToggleButton">
+            <Setter Property="Padding" Value="6,1" />
+            <Setter Property="MinHeight" Value="20" />
+            <Setter Property="MinWidth" Value="64" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Focusable" Value="True" />
+        </Style>
+
+        <DataTemplate DataType="{x:Type vm:RibbonGroupViewModel}">
+            <Border
+                Margin="1,0,0,1"
+                Padding="1"
+                Background="{DynamicResource CardBackgroundFillColorDefaultAppBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+
+                <Grid Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ItemsControl Grid.Row="0" ItemsSource="{Binding Buttons}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
+                                <WrapPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:RibbonButtonViewModel}">
+
+                                <ToggleButton
+                                    Command="{Binding Command}"
+                                    CommandParameter="{Binding CommandParameter}"
+                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                    IsEnabled="{Binding IsActive}"
+                                    Style="{StaticResource RibbonButtonStyle}"
+                                    Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+
+                                    <ToggleButton.Content>
+                                        <Grid>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <ui:SymbolIcon
+                                                Grid.Column="0"
+                                                Width="18"
+                                                Height="18"
+                                                Margin="1,0"
+                                                Symbol="{Binding Icon}">
+
+                                                <ui:SymbolIcon.Style>
+                                                    <Style TargetType="ui:SymbolIcon">
+                                                        <Setter Property="Visibility" Value="Visible" />
+
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Icon}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+
+                                                    </Style>
+                                                </ui:SymbolIcon.Style>
+
+                                            </ui:SymbolIcon>
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="1,2,1,1"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Text="{Binding Header}"
+                                                TextAlignment="Center"
+                                                TextWrapping="NoWrap" />
+
+                                        </Grid>
+                                    </ToggleButton.Content>
+
+                                </ToggleButton>
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+
                     </ItemsControl>
-                </ScrollViewer>
-            </DataTemplate>
-        </ResourceDictionary>
+
+                    <Border
+                        Grid.Row="1"
+                        Margin="1,1,1,0"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultAppBrush}"
+                        BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,6,6">
+                        <TextBlock
+                            Padding="2,2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="{Binding Header}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="RibbonTabButtonTemplate"
+            DataType="{x:Type vm:RibbonTabViewModel}">
+            <ToggleButton
+                Margin="2,0"
+                Checked="TabButton_Checked"
+                IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                IsEnabled="{Binding IsActive}"
+                Style="{StaticResource RibbonTabToggleStyle}">
+
+                <TextBlock
+                    Padding="3,0"
+                    FontWeight="SemiBold"
+                    Text="{Binding Header}" />
+            </ToggleButton>
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="RibbonTabContentTemplate"
+            DataType="{x:Type vm:RibbonTabViewModel}">
+
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Disabled">
+                <ItemsControl
+                    ItemsSource="{Binding Groups}"
+                    Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>
+
         <Border
-            Padding="2,0"
-            Background="Transparent"
-            BorderBrush="Beige"
-            BorderThickness="1">
+            Margin="1"
+            Padding="2,1"
+            BorderBrush="{DynamicResource SolidBackgroundFillColorMainAppBrush}"
+            BorderThickness="1"
+            CornerRadius="5">
+
             <StackPanel>
+
                 <Border
-                    Background="Transparent"
-                    BorderBrush="Beige"
-                    BorderThickness="0,0,0,1">
-                    <ItemsControl ItemTemplate="{StaticResource RibbonTabButtonTemplate}" ItemsSource="{Binding ViewModel.Tabs}">
+                    Padding="1"
+                    BorderBrush="{DynamicResource SolidBackgroundFillColorMainAppBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="5">
+
+                    <ItemsControl
+                        ItemTemplate="{StaticResource RibbonTabButtonTemplate}"
+                        ItemsSource="{Binding ViewModel.Tabs}">
+
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
+
                     </ItemsControl>
+
                 </Border>
-                <ContentControl Content="{Binding ViewModel.SelectedTab}" ContentTemplate="{StaticResource RibbonTabContentTemplate}" />
+
+                <ContentControl
+                    Content="{Binding ViewModel.SelectedTab}"
+                    ContentTemplate="{StaticResource RibbonTabContentTemplate}" />
+
             </StackPanel>
+
         </Border>
+
     </Grid>
+
 </UserControl>
